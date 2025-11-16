@@ -354,14 +354,17 @@ fi
 
 # Ask for module name
 if [ "$TYPE" = "controller" ]; then
-    # For controllers, ask module name and type in one question
-    echo "Enter the module name (e.g., users):"
-    read MODULE_NAME
-    echo "Is this for a feature or gateway module? (feature/gateway, default: feature):"
-    read MODULE_KIND
-    if [ "$MODULE_KIND" = "gateway" ]; then
+    # For controllers, combine module name and type in one question
+    echo "Enter the module name (e.g., 'users' for feature or 'users gateway' for gateway, default: feature):"
+    read MODULE_INPUT
+    
+    # Parse input: check if it contains "gateway"
+    if [[ "$MODULE_INPUT" == *"gateway"* ]]; then
+        MODULE_NAME=$(echo "$MODULE_INPUT" | sed 's/gateway//' | xargs)
         MODULE_PATH="src/gateways/${MODULE_NAME}"
     else
+        # Default to feature (remove "feature" if user typed it, or use as-is)
+        MODULE_NAME=$(echo "$MODULE_INPUT" | sed 's/feature//' | xargs)
         MODULE_PATH="src/features/${MODULE_NAME}"
     fi
 else
