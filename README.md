@@ -192,8 +192,14 @@ src/
       hooks/
     router/
     utils/
+    container.ts      # Inversify container (en la raíz de core)
+    core.module.ts   # Configuración del módulo core
   features/
 ```
+
+**Archivos creados automáticamente:**
+- `src/core/container.ts`: Contenedor de Inversify con autobind habilitado (ubicado en la raíz de `core`, no en `infra/di`)
+- `src/core/core.module.ts`: Función `configureCoreModule` para configurar los bindings del módulo core
 
 ### Configuración Automática
 
