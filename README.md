@@ -1,6 +1,6 @@
 # DDDrizer - Hexagonal Architecture CLI
 
-Herramienta CLI para generar componentes de arquitectura hexagonal en proyectos NestJS.
+Herramienta CLI para generar componentes de arquitectura hexagonal en proyectos NestJS y React.
 
 **Repositorio:** [github.com/ferso/dddrizer](https://github.com/ferso/dddrizer)
 
@@ -108,11 +108,21 @@ dddrizer module Users
 - **React**: `data/` con repositories, sources, adapters y `interface/` con components, screens, etc.
 
 ### 2. Service
-Crea un servicio con su provider:
+Crea un servicio con su provider. El comando te preguntará en qué capa crear el servicio:
 
 ```bash
-./hexagonal.sh service CreateUser
+dddrizer service CreateUser
 ```
+
+**Selección de capa:**
+- **1) application**: Para servicios de aplicación (orquestación, casos de uso)
+- **2) domain**: Para servicios de dominio (lógica de negocio pura)
+
+El servicio se creará en la capa seleccionada:
+- `application/services/` - Servicios de aplicación
+- `domain/services/` - Servicios de dominio
+
+**Nota:** Los providers (NestJS) y bindings (React) se generan automáticamente según el tipo de proyecto.
 
 ### 3. Usecase
 Crea un caso de uso con su servicio asociado:
@@ -157,10 +167,23 @@ dddrizer hook UseUserData
 ```
 
 ### 9. Copy Service
-Copia un servicio existente a otro módulo:
+Copia un servicio existente a otro módulo. El servicio mantendrá la misma capa (application o domain) del servicio original:
 
 ```bash
-./hexagonal.sh copy-service CreateVerificationWallet
+dddrizer copy-service CreateVerificationWallet
+```
+
+El comando te pedirá:
+1. La ruta del servicio fuente (debe incluir la capa: `application/services/` o `domain/services/`)
+2. El nombre del módulo destino
+
+**Ejemplo:**
+```bash
+# Si el servicio está en application/services/
+verification/application/services/create-verification-wallet.service
+
+# Si el servicio está en domain/services/
+verification/domain/services/create-verification-wallet.service
 ```
 
 ### 10. Rename
@@ -187,6 +210,7 @@ src/
   features/ o gateways/
     <module-name>/
       application/
+        services/        # Servicios de aplicación (orquestación)
         usecases/
         hooks/
         dtos/
@@ -195,7 +219,7 @@ src/
         repositories/
         ports/
         dtos/
-        services/
+        services/        # Servicios de dominio (lógica de negocio)
         exceptions/
       infra/
         controllers/
@@ -215,6 +239,7 @@ src/
   features/ o gateways/
     <module-name>/
       application/
+        services/        # Servicios de aplicación (orquestación)
         hooks/
         dtos/
       domain/
@@ -222,7 +247,7 @@ src/
         repositories/
         ports/
         dtos/
-        services/
+        services/        # Servicios de dominio (lógica de negocio)
       data/
         repositories/
         sources/
@@ -234,24 +259,32 @@ src/
         hooks/
 ```
 
-**Nota importante:** El directorio `domain` siempre contiene los mismos subdirectorios en ambos tipos de proyecto:
-- `models/` - Modelos de dominio
-- `repositories/` - Interfaces de repositorios
-- `ports/` - Puertos de la arquitectura hexagonal
-- `dtos/` - Data Transfer Objects del dominio
-- `services/` - Servicios de dominio
+**Nota importante sobre la estructura:**
+- El directorio `domain` siempre contiene los mismos subdirectorios en ambos tipos de proyecto:
+  - `models/` - Modelos de dominio
+  - `repositories/` - Interfaces de repositorios
+  - `ports/` - Puertos de la arquitectura hexagonal
+  - `dtos/` - Data Transfer Objects del dominio
+  - `services/` - Servicios de dominio (lógica de negocio pura)
+
+- Los servicios pueden crearse en dos capas:
+  - `application/services/` - Para servicios de aplicación que orquestan casos de uso
+  - `domain/services/` - Para servicios de dominio con lógica de negocio pura
+
+- Al crear un servicio, el CLI te preguntará en qué capa deseas crearlo
 
 ## Características
 
 - ✅ **Soporte multi-proyecto**: NestJS y React
 - ✅ **Inicialización automática**: Comando `init` para configurar el proyecto
 - ✅ **Instalación automática**: Agrega inversify automáticamente para proyectos React
+- ✅ **Selección de capa para services**: Permite elegir entre `application` o `domain` al crear servicios
 - ✅ Genera código siguiendo arquitectura hexagonal
 - ✅ Actualiza automáticamente los módulos (NestJS providers o React Inversify bindings)
 - ✅ Evita duplicados en imports, providers y exports
-- ✅ Soporta renombrado de componentes
-- ✅ Soporta eliminación de servicios
-- ✅ Soporta copia de servicios entre módulos
+- ✅ Soporta renombrado de componentes (detecta automáticamente la capa del servicio)
+- ✅ Soporta eliminación de servicios (busca en ambas capas automáticamente)
+- ✅ Soporta copia de servicios entre módulos (preserva la capa del servicio original)
 - ✅ Valida que los archivos no existan antes de crearlos
 - ✅ Soporta módulos feature y gateway
 - ✅ Estructura de directorios adaptada según el tipo de proyecto
@@ -272,4 +305,9 @@ src/
 - Para proyectos React, el script requiere inversify (se instala automáticamente con `init`)
 - Controllers solo están disponibles para proyectos NestJS
 - Hooks solo están disponibles para proyectos React
+- **Services**: Al crear un service, se te preguntará si deseas crearlo en `application` o `domain`
+  - `application/services/`: Para servicios que orquestan casos de uso y coordinan entre componentes
+  - `domain/services/`: Para servicios con lógica de negocio pura del dominio
+- Los comandos `remove` y `rename` buscan automáticamente en ambas capas si no encuentran el archivo
+- El comando `copy-service` preserva la capa del servicio original (detecta automáticamente desde la ruta)
 

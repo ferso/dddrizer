@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2024-12-19
+
+### Added
+- **Layer selection for services**: When creating a service, users can now choose between `application` or `domain` layer
+  - Services can be created in `application/services/` for orchestration services
+  - Services can be created in `domain/services/` for pure domain logic services
+  - The CLI prompts the user to select the layer during service creation
+
+### Changed
+- **Service creation flow**: Now prompts user to select layer (application or domain) before creating service
+- **Remove command**: Now searches for services in both `application/services/` and `domain/services/` automatically
+- **Rename command**: Now handles services in both layers, detecting the correct location automatically
+- **Copy-service command**: Now preserves the layer of the original service (detects from source path)
+- **Module structure**: Both `application/services/` and `domain/services/` directories are created during module initialization
+
+### Fixed
+- Provider imports now correctly reference the selected service layer
+- Module bindings (React) now use the correct import path based on selected layer
+- All service-related commands now properly handle services in both layers
+
 ## [1.0.0] - 2024-12-19
 
 ### Added
