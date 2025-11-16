@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - **NestJS**: `src/core/` (with application, domain, infra, utils), `src/features/`, `src/gateways/`
     - **React**: `src/assets/`, `src/core/` (with data, domain, application/hooks, router, utils), `src/features/`
   - If existing project, only creates configuration file
+- **Core module files for React**: When creating a new React project, automatically creates:
+  - `src/core/container.ts`: Inversify container with autobind enabled (in root of core, not in infra/di)
+  - `src/core/core.module.ts`: Core module configuration function `configureCoreModule`
+  - Based on mettal-beta core module structure
 
 ### Changed
 
