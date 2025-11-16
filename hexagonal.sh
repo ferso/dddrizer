@@ -353,19 +353,22 @@ fi
 
 
 # Ask for module name
-echo "Enter the module name (e.g., leasers):"
-read MODULE_NAME
-
-# Construct full module path (default to features). For controllers, allow gateway.
-MODULE_PATH="src/features/${MODULE_NAME}"
 if [ "$TYPE" = "controller" ]; then
-    echo "Is this controller for a feature or a gateway module? (feature/gateway):"
+    # For controllers, ask module name and type in one question
+    echo "Enter the module name (e.g., users):"
+    read MODULE_NAME
+    echo "Is this for a feature or gateway module? (feature/gateway, default: feature):"
     read MODULE_KIND
     if [ "$MODULE_KIND" = "gateway" ]; then
         MODULE_PATH="src/gateways/${MODULE_NAME}"
     else
         MODULE_PATH="src/features/${MODULE_NAME}"
     fi
+else
+    # For other types, just ask for module name (default to features)
+    echo "Enter the module name (e.g., leasers):"
+    read MODULE_NAME
+    MODULE_PATH="src/features/${MODULE_NAME}"
 fi
 
 # Check if module path exists
