@@ -34,9 +34,19 @@ Deberías ver el mensaje de ayuda con todos los comandos disponibles.
 npx dddrizer init
 ```
 
-Selecciona el tipo de proyecto:
-- `1` para NestJS
-- `2` para React
+El comando te preguntará:
+
+1. **¿Es un proyecto nuevo?** (y/n)
+   - Si es nuevo: Se creará la estructura base del proyecto
+   - Si no es nuevo: Solo se creará el archivo de configuración
+
+2. **Tipo de proyecto:**
+   - `1` para NestJS
+   - `2` para React
+
+**Para proyectos nuevos:**
+- **NestJS**: Se creará `src/core/`, `src/features/`, `src/gateways/` con su estructura completa
+- **React**: Se creará `src/assets/`, `src/core/`, `src/features/` con su estructura completa
 
 Si seleccionas React, se instalará automáticamente `inversify@7.2.0`.
 

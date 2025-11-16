@@ -150,15 +150,52 @@ O si lo copiaste directamente:
 ./hexagonal.sh init
 ```
 
-Esto te pedirá seleccionar el tipo de proyecto:
-- **NestJS**: Para proyectos backend con NestJS
-- **React**: Para proyectos frontend con React (requiere Inversify)
+El comando te preguntará:
 
-Si seleccionas React, el script automáticamente:
-- Agregará `inversify@7.2.0` a las dependencias del `package.json`
-- Ejecutará `npm install` para instalar las dependencias
+1. **¿Es un proyecto nuevo?** (y/n)
+   - Si respondes **y/yes**: Se creará la estructura base del proyecto
+   - Si respondes **n/no**: Solo se creará el archivo de configuración
 
-Se creará un archivo `.dddrizer.json` en la raíz del proyecto con la configuración.
+2. **Tipo de proyecto:**
+   - **1) NestJS**: Para proyectos backend con NestJS
+   - **2) React**: Para proyectos frontend con React (requiere Inversify)
+
+### Estructura Base para Proyectos Nuevos
+
+#### NestJS:
+Si es un proyecto nuevo NestJS, se creará:
+```
+src/
+  core/              # Módulo base del proyecto
+    application/
+    domain/
+    infra/
+    utils/
+  features/
+  gateways/
+```
+
+#### React:
+Si es un proyecto nuevo React, se creará:
+```
+src/
+  assets/
+  core/              # Módulo base del proyecto
+    data/
+    domain/
+    application/
+      hooks/
+    router/
+    utils/
+  features/
+```
+
+### Configuración Automática
+
+- Se creará un archivo `.dddrizer.json` en la raíz del proyecto con la configuración
+- Si seleccionas React, el script automáticamente:
+  - Agregará `inversify@7.2.0` a las dependencias del `package.json`
+  - Ejecutará `npm install` para instalar las dependencias
 
 ## Uso
 
