@@ -232,17 +232,18 @@ if [ "$TYPE" = "module" ]; then
     fi
     
     # Create directories based on project type
-    # Domain structure is always the same: models, repositories, ports, dtos, services
+    # Domain structure is always the same: models, repositories, ports, dtos
     mkdir -p "${MODULE_PATH}/domain/models"
     mkdir -p "${MODULE_PATH}/domain/repositories"
     mkdir -p "${MODULE_PATH}/domain/ports"
     mkdir -p "${MODULE_PATH}/domain/dtos"
-    mkdir -p "${MODULE_PATH}/domain/services"
     
     if [ "$PROJECT_TYPE" = "react" ]; then
         # React structure
+        mkdir -p "${MODULE_PATH}/application/services"
         mkdir -p "${MODULE_PATH}/application/hooks"
         mkdir -p "${MODULE_PATH}/application/dtos"
+        mkdir -p "${MODULE_PATH}/domain/services"
         mkdir -p "${MODULE_PATH}/data/repositories"
         mkdir -p "${MODULE_PATH}/data/sources"
         mkdir -p "${MODULE_PATH}/data/adapters"
@@ -252,9 +253,11 @@ if [ "$TYPE" = "module" ]; then
         mkdir -p "${MODULE_PATH}/interface/hooks"
     else
         # NestJS structure
+        mkdir -p "${MODULE_PATH}/application/services"
         mkdir -p "${MODULE_PATH}/application/usecases"
         mkdir -p "${MODULE_PATH}/application/dtos"
         mkdir -p "${MODULE_PATH}/application/hooks"
+        mkdir -p "${MODULE_PATH}/domain/services"
         mkdir -p "${MODULE_PATH}/domain/exceptions"
         mkdir -p "${MODULE_PATH}/infra/controllers"
         mkdir -p "${MODULE_PATH}/infra/graphql"
@@ -302,6 +305,7 @@ EOL
     echo "└── ${MODULE_PATH}"
     echo "    ├── application"
     if [ "$PROJECT_TYPE" = "react" ]; then
+        echo "    │   ├── services"
         echo "    │   ├── hooks"
         echo "    │   └── dtos"
         echo "    ├── domain"
@@ -320,6 +324,7 @@ EOL
         echo "        ├── layouts"
         echo "        └── hooks"
     else
+        echo "    │   ├── services"
         echo "    │   ├── usecases"
         echo "    │   ├── hooks"
         echo "    │   └── dtos"
@@ -386,14 +391,20 @@ if [ "$TYPE" = "remove" ]; then
     CLASS_NAME=$(echo "$REMOVE_NAME" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
     FILE_SLUG=$(echo "$CLASS_NAME" | sed -E 's/([a-z0-9])([A-Z])/\1-\2/g' | tr '[:upper:]' '[:lower:]')
 
-    SERVICE_FILE="domain/services/${FILE_SLUG}.service.ts"
+    # Service file path will be determined by user choice when creating
+    # For remove, we check both possible locations
+    SERVICE_FILE_APP="application/services/${FILE_SLUG}.service.ts"
+    SERVICE_FILE_DOMAIN="domain/services/${FILE_SLUG}.service.ts"
     PROVIDER_FILE="infra/providers/${FILE_SLUG}.service.provider.ts"
 
-    if [ -f "$SERVICE_FILE" ]; then
-        rm "$SERVICE_FILE"
-        echo "Removed: $SERVICE_FILE"
+    if [ -f "$SERVICE_FILE_APP" ]; then
+        rm "$SERVICE_FILE_APP"
+        echo "Removed: $SERVICE_FILE_APP"
+    elif [ -f "$SERVICE_FILE_DOMAIN" ]; then
+        rm "$SERVICE_FILE_DOMAIN"
+        echo "Removed: $SERVICE_FILE_DOMAIN"
     else
-        echo "Not found, skipping: $SERVICE_FILE"
+        echo "Not found, skipping: Service file not found in application or domain"
     fi
 
     if [ -f "$PROVIDER_FILE" ]; then
@@ -421,14 +432,34 @@ FILE_SLUG=$(echo "$CLASS_NAME" | sed -E 's/([a-z0-9])([A-Z])/\1-\2/g' | tr '[:up
 
 # Create class file based on type
 if [ "$TYPE" = "service" ]; then
+    # Ask user which layer to create the service in
+    echo "In which layer should this service be created?"
+    echo "1) application"
+    echo "2) domain"
+    echo ""
+    read -p "Enter your choice (1 or 2): " layer_choice
+    
+    case "$layer_choice" in
+        1)
+            SERVICE_LAYER="application"
+            ;;
+        2)
+            SERVICE_LAYER="domain"
+            ;;
+        *)
+            echo "Error: Invalid choice. Defaulting to application."
+            SERVICE_LAYER="application"
+            ;;
+    esac
+    
     # Create service file (skip if exists)
-    mkdir -p domain/services
-    if [ -f "domain/services/${FILE_SLUG}.service.ts" ]; then
-        echo "File already exists, skipping: domain/services/${FILE_SLUG}.service.ts"
+    mkdir -p "${SERVICE_LAYER}/services"
+    if [ -f "${SERVICE_LAYER}/services/${FILE_SLUG}.service.ts" ]; then
+        echo "File already exists, skipping: ${SERVICE_LAYER}/services/${FILE_SLUG}.service.ts"
     else
         if [ "$PROJECT_TYPE" = "react" ]; then
             # React service with Inversify
-            cat > "domain/services/${FILE_SLUG}.service.ts" << EOL
+            cat > "${SERVICE_LAYER}/services/${FILE_SLUG}.service.ts" << EOL
 import { injectable } from "inversify";
 
 @injectable()
@@ -442,7 +473,7 @@ export class ${CLASS_NAME}Service {
 EOL
         else
             # NestJS service
-            cat > "domain/services/${FILE_SLUG}.service.ts" << EOL
+            cat > "${SERVICE_LAYER}/services/${FILE_SLUG}.service.ts" << EOL
 import { Injectable, Logger } from '@nestjs/common';
 
 interface ${CLASS_NAME}Input {
@@ -491,7 +522,7 @@ EOL
         else
             cat > "infra/providers/${FILE_SLUG}.service.provider.ts" << EOL
 import { Provider } from '@nestjs/common';
-import { ${CLASS_NAME}Service } from '../../domain/services/${FILE_SLUG}.service';
+import { ${CLASS_NAME}Service } from '../../${SERVICE_LAYER}/services/${FILE_SLUG}.service';
 
 
 export const ${CLASS_NAME}ServiceProvider: Provider = {
@@ -503,12 +534,12 @@ EOL
     fi
 elif [ "$TYPE" = "usecase" ]; then
     if [ "$PROJECT_TYPE" = "react" ]; then
-        # React: usecases are created as services
-        mkdir -p domain/services
-        if [ -f "domain/services/${FILE_SLUG}.service.ts" ]; then
-            echo "File already exists, skipping: domain/services/${FILE_SLUG}.service.ts"
+        # React: usecases are created as services in application
+        mkdir -p application/services
+        if [ -f "application/services/${FILE_SLUG}.service.ts" ]; then
+            echo "File already exists, skipping: application/services/${FILE_SLUG}.service.ts"
         else
-            cat > "domain/services/${FILE_SLUG}.service.ts" << EOL
+            cat > "application/services/${FILE_SLUG}.service.ts" << EOL
 import { injectable, inject } from "inversify";
 
 @injectable()
@@ -566,6 +597,7 @@ EOL
         fi
 
         # Create service file (same name as usecase but with Service suffix) (skip if exists)
+        # Usecases always use domain/services for the service
         mkdir -p domain/services
         if [ -f "domain/services/${FILE_SLUG}.service.ts" ]; then
             echo "File already exists, skipping: domain/services/${FILE_SLUG}.service.ts"
@@ -808,7 +840,7 @@ elif [ "$TYPE" = "hook" ]; then
         echo "File already exists, skipping: application/hooks/${FILE_SLUG}.hook.ts"
     else
         cat > "application/hooks/${FILE_SLUG}.hook.ts" << EOL
-import { ${SERVICE_NAME} } from "@$(basename $(pwd))/domain/services/${FILE_SLUG}.service";
+import { ${SERVICE_NAME} } from "@$(basename $(pwd))/application/services/${FILE_SLUG}.service";
 import { useInjection } from "@core/interface/providers/api.provider";
 import { useState } from "react";
 
@@ -905,8 +937,36 @@ if [ "$PROJECT_TYPE" = "react" ]; then
     # React: Use Inversify bindings
     TEMP_FILE=$(mktemp)
     
-    if [ "$TYPE" = "service" ] || [ "$TYPE" = "usecase" ]; then
+    if [ "$TYPE" = "service" ]; then
         # Add import if not exists
+        if ! grep -q "import { ${CLASS_NAME}Service }" "$MODULE_FILE"; then
+            awk -v class="$CLASS_NAME" -v slug="$FILE_SLUG" -v layer="$SERVICE_LAYER" '
+                BEGIN { added_import = 0 }
+                /^import/ && !added_import {
+                    print
+                    print "import { " class "Service } from \"./" layer "/services/" slug ".service\";"
+                    added_import = 1
+                    next
+                }
+                { print }
+            ' "$MODULE_FILE" > "$TEMP_FILE"
+            mv "$TEMP_FILE" "$MODULE_FILE"
+        fi
+        
+        # Add binding if not exists
+        if ! grep -q "container.bind(\"${CLASS_NAME}Service\")" "$MODULE_FILE"; then
+            awk -v class="$CLASS_NAME" '
+                /\/\/ .*module bindings will be added here/ {
+                    print "  container.bind(\"" class "Service\").to(" class "Service);"
+                    print $0
+                    next
+                }
+                { print }
+            ' "$MODULE_FILE" > "$TEMP_FILE"
+            mv "$TEMP_FILE" "$MODULE_FILE"
+        fi
+    elif [ "$TYPE" = "usecase" ]; then
+        # Usecases always use domain/services for the service
         if ! grep -q "import { ${CLASS_NAME}Service }" "$MODULE_FILE"; then
             awk -v class="$CLASS_NAME" -v slug="$FILE_SLUG" '
                 BEGIN { added_import = 0 }
@@ -914,6 +974,19 @@ if [ "$PROJECT_TYPE" = "react" ]; then
                     print
                     print "import { " class "Service } from \"./domain/services/" slug ".service\";"
                     added_import = 1
+                    next
+                }
+                { print }
+            ' "$MODULE_FILE" > "$TEMP_FILE"
+            mv "$TEMP_FILE" "$MODULE_FILE"
+        fi
+        
+        # Add binding if not exists
+        if ! grep -q "container.bind(\"${CLASS_NAME}Service\")" "$MODULE_FILE"; then
+            awk -v class="$CLASS_NAME" '
+                /\/\/ .*module bindings will be added here/ {
+                    print "  container.bind(\"" class "Service\").to(" class "Service);"
+                    print $0
                     next
                 }
                 { print }
@@ -1150,13 +1223,13 @@ fi
 echo "${CLASS_NAME} ${TYPE} created successfully in ${MODULE_PATH}!"
 echo "Files created:"
 if [ "$TYPE" = "service" ]; then
-    echo "1. ${MODULE_PATH}/domain/services/${FILE_SLUG}.service.ts"
+    echo "1. ${MODULE_PATH}/${SERVICE_LAYER}/services/${FILE_SLUG}.service.ts"
     if [ "$PROJECT_TYPE" != "react" ]; then
         echo "2. ${MODULE_PATH}/infra/providers/${FILE_SLUG}.service.provider.ts"
     fi
 elif [ "$TYPE" = "usecase" ]; then
     if [ "$PROJECT_TYPE" = "react" ]; then
-        echo "1. ${MODULE_PATH}/domain/services/${FILE_SLUG}.service.ts"
+        echo "1. ${MODULE_PATH}/application/services/${FILE_SLUG}.service.ts"
     else
         echo "1. ${MODULE_PATH}/application/usecases/${FILE_SLUG}.usecase.ts"
         echo "2. ${MODULE_PATH}/domain/services/${FILE_SLUG}.service.ts"
@@ -1195,7 +1268,7 @@ fi
 
 # Agregar la nueva lógica para copy-service después del bloque if [ "$TYPE" = "module" ]
 if [ "$TYPE" = "copy-service" ]; then
-    echo "Enter the source service path (e.g., verification/domain/services/create-verification-wallet.service):"
+    echo "Enter the source service path (e.g., verification/application/services/create-verification-wallet.service or verification/domain/services/create-verification-wallet.service):"
     read SOURCE_PATH
     
     echo "Enter the target module name (e.g., users):"
@@ -1234,20 +1307,31 @@ if [ "$TYPE" = "copy-service" ]; then
         exit 1
     fi
     
+    # Determine target layer from source path
+    if [[ $SOURCE_PATH == *"/application/services/"* ]]; then
+        TARGET_LAYER="application"
+    elif [[ $SOURCE_PATH == *"/domain/services/"* ]]; then
+        TARGET_LAYER="domain"
+    else
+        # Default to application if path doesn't specify
+        echo "Could not determine layer from path, defaulting to application"
+        TARGET_LAYER="application"
+    fi
+    
     # Create service file
-    mkdir -p "${TARGET_PATH}/domain/services"
+    mkdir -p "${TARGET_PATH}/${TARGET_LAYER}/services"
     
     # Copy and modify the service file (skip if exists)
-    if [ -f "${TARGET_PATH}/domain/services/${TARGET_SLUG}.service.ts" ]; then
-        echo "File already exists, skipping: ${TARGET_PATH}/domain/services/${TARGET_SLUG}.service.ts"
+    if [ -f "${TARGET_PATH}/${TARGET_LAYER}/services/${TARGET_SLUG}.service.ts" ]; then
+        echo "File already exists, skipping: ${TARGET_PATH}/${TARGET_LAYER}/services/${TARGET_SLUG}.service.ts"
     else
-        sed "s/${SERVICE_NAME}/${TARGET_SLUG}/g" "$SOURCE_FILE" > "${TARGET_PATH}/domain/services/${TARGET_SLUG}.service.ts"
-        sed -i "" "s/class [a-zA-Z]*Service/class ${TARGET_NAME}Service/g" "${TARGET_PATH}/domain/services/${TARGET_SLUG}.service.ts"
+        sed "s/${SERVICE_NAME}/${TARGET_SLUG}/g" "$SOURCE_FILE" > "${TARGET_PATH}/${TARGET_LAYER}/services/${TARGET_SLUG}.service.ts"
+        sed -i "" "s/class [a-zA-Z]*Service/class ${TARGET_NAME}Service/g" "${TARGET_PATH}/${TARGET_LAYER}/services/${TARGET_SLUG}.service.ts"
         
         # If React, replace NestJS imports with Inversify
         if [ "$PROJECT_TYPE" = "react" ]; then
-            sed -i "" "s/@Injectable()/@injectable()/g" "${TARGET_PATH}/domain/services/${TARGET_SLUG}.service.ts"
-            sed -i "" "s/import { Injectable } from '@nestjs\/common';/import { injectable } from \"inversify\";/g" "${TARGET_PATH}/domain/services/${TARGET_SLUG}.service.ts"
+            sed -i "" "s/@Injectable()/@injectable()/g" "${TARGET_PATH}/${TARGET_LAYER}/services/${TARGET_SLUG}.service.ts"
+            sed -i "" "s/import { Injectable } from '@nestjs\/common';/import { injectable } from \"inversify\";/g" "${TARGET_PATH}/${TARGET_LAYER}/services/${TARGET_SLUG}.service.ts"
         fi
     fi
     
@@ -1259,7 +1343,7 @@ if [ "$TYPE" = "copy-service" ]; then
         else
             cat > "${TARGET_PATH}/infra/providers/${TARGET_SLUG}.service.provider.ts" << EOL
 import { Provider } from '@nestjs/common';
-import { ${TARGET_NAME}Service } from '../../domain/services/${TARGET_SLUG}.service';
+import { ${TARGET_NAME}Service } from '../../${TARGET_LAYER}/services/${TARGET_SLUG}.service';
 
 export const ${TARGET_NAME}ServiceProvider: Provider = {
   provide: '${TARGET_NAME}Service',
@@ -1278,11 +1362,11 @@ EOL
             
             # Add import if not exists
             if ! grep -q "import { ${TARGET_NAME}Service }" "$MODULE_FILE"; then
-                awk -v class="$TARGET_NAME" -v slug="$TARGET_SLUG" '
+                awk -v class="$TARGET_NAME" -v slug="$TARGET_SLUG" -v layer="$TARGET_LAYER" '
                     BEGIN { added_import = 0 }
                     /^import/ && !added_import {
                         print
-                        print "import { " class "Service } from \"./domain/services/" slug ".service\";"
+                        print "import { " class "Service } from \"./" layer "/services/" slug ".service\";"
                         added_import = 1
                         next
                     }
@@ -1349,7 +1433,7 @@ EOL
     
     echo "Service copied successfully!"
     echo "Files created:"
-    echo "1. ${TARGET_PATH}/domain/services/${TARGET_SLUG}.service.ts"
+    echo "1. ${TARGET_PATH}/${TARGET_LAYER}/services/${TARGET_SLUG}.service.ts"
     if [ "$PROJECT_TYPE" != "react" ]; then
         echo "2. ${TARGET_PATH}/infra/providers/${TARGET_SLUG}.service.provider.ts"
         echo "3. Updated module file: $MODULE_FILE"
@@ -1507,15 +1591,25 @@ if [ "$TYPE" = "rename" ]; then
     # Rename files based on component type
     case "$COMPONENT_TYPE" in
         "service")
-            rename_file_and_references \
-                "domain/services/${OLD_FILE_SLUG}.service.ts" \
-                "domain/services/${NEW_FILE_SLUG}.service.ts" \
-                "$OLD_CLASS_NAME" "$NEW_CLASS_NAME" "$OLD_FILE_SLUG" "$NEW_FILE_SLUG"
+            # Check both possible locations for service
+            if [ -f "application/services/${OLD_FILE_SLUG}.service.ts" ]; then
+                rename_file_and_references \
+                    "application/services/${OLD_FILE_SLUG}.service.ts" \
+                    "application/services/${NEW_FILE_SLUG}.service.ts" \
+                    "$OLD_CLASS_NAME" "$NEW_CLASS_NAME" "$OLD_FILE_SLUG" "$NEW_FILE_SLUG"
+            elif [ -f "domain/services/${OLD_FILE_SLUG}.service.ts" ]; then
+                rename_file_and_references \
+                    "domain/services/${OLD_FILE_SLUG}.service.ts" \
+                    "domain/services/${NEW_FILE_SLUG}.service.ts" \
+                    "$OLD_CLASS_NAME" "$NEW_CLASS_NAME" "$OLD_FILE_SLUG" "$NEW_FILE_SLUG"
+            fi
             
-            rename_file_and_references \
-                "infra/providers/${OLD_FILE_SLUG}.service.provider.ts" \
-                "infra/providers/${NEW_FILE_SLUG}.service.provider.ts" \
-                "$OLD_CLASS_NAME" "$NEW_CLASS_NAME" "$OLD_FILE_SLUG" "$NEW_FILE_SLUG"
+            if [ -f "infra/providers/${OLD_FILE_SLUG}.service.provider.ts" ]; then
+                rename_file_and_references \
+                    "infra/providers/${OLD_FILE_SLUG}.service.provider.ts" \
+                    "infra/providers/${NEW_FILE_SLUG}.service.provider.ts" \
+                    "$OLD_CLASS_NAME" "$NEW_CLASS_NAME" "$OLD_FILE_SLUG" "$NEW_FILE_SLUG"
+            fi
             ;;
         "usecase")
             rename_file_and_references \
