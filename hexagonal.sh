@@ -67,6 +67,12 @@ if [ "$1" = "init" ]; then
     echo "DDDrizer Project Initialization"
     echo "================================"
     echo ""
+    
+    # Ask if this is a new project
+    echo "Is this a new project? (y/n):"
+    read -p "If yes, the base project structure will be created: " is_new_project
+    
+    echo ""
     echo "What type of project is this?"
     echo "1) NestJS"
     echo "2) React"
@@ -97,6 +103,50 @@ EOL
     echo ""
     echo "✓ Configuration file created: $CONFIG_FILE"
     echo "✓ Project type set to: $PROJECT_TYPE"
+    
+    # If new project, create base structure
+    if [ "$is_new_project" = "y" ] || [ "$is_new_project" = "Y" ] || [ "$is_new_project" = "yes" ] || [ "$is_new_project" = "Yes" ]; then
+        echo ""
+        echo "Creating base project structure..."
+        
+        if [ "$PROJECT_TYPE" = "nestjs" ]; then
+            # NestJS structure
+            mkdir -p "src/core/application"
+            mkdir -p "src/core/domain"
+            mkdir -p "src/core/infra"
+            mkdir -p "src/core/utils"
+            mkdir -p "src/features"
+            mkdir -p "src/gateways"
+            
+            echo "✓ Created NestJS base structure:"
+            echo "  - src/core/ (base module)"
+            echo "    - application/"
+            echo "    - domain/"
+            echo "    - infra/"
+            echo "    - utils/"
+            echo "  - src/features/"
+            echo "  - src/gateways/"
+        else
+            # React structure
+            mkdir -p "src/assets"
+            mkdir -p "src/core/data"
+            mkdir -p "src/core/domain"
+            mkdir -p "src/core/application/hooks"
+            mkdir -p "src/core/router"
+            mkdir -p "src/core/utils"
+            mkdir -p "src/features"
+            
+            echo "✓ Created React base structure:"
+            echo "  - src/assets/"
+            echo "  - src/core/ (base module)"
+            echo "    - data/"
+            echo "    - domain/"
+            echo "    - application/hooks/"
+            echo "    - router/"
+            echo "    - utils/"
+            echo "  - src/features/"
+        fi
+    fi
     
     # If React, add inversify dependency
     if [ "$PROJECT_TYPE" = "react" ]; then
