@@ -187,7 +187,6 @@ src/
   features/ o gateways/
     <module-name>/
       application/
-        services/
         usecases/
         hooks/
         dtos/
@@ -196,6 +195,7 @@ src/
         repositories/
         ports/
         dtos/
+        services/
         exceptions/
       infra/
         controllers/
@@ -215,7 +215,6 @@ src/
   features/ o gateways/
     <module-name>/
       application/
-        services/
         hooks/
         dtos/
       domain/
@@ -223,6 +222,7 @@ src/
         repositories/
         ports/
         dtos/
+        services/
       data/
         repositories/
         sources/
@@ -239,6 +239,7 @@ src/
 - `repositories/` - Interfaces de repositorios
 - `ports/` - Puertos de la arquitectura hexagonal
 - `dtos/` - Data Transfer Objects del dominio
+- `services/` - Servicios de dominio
 
 ## Características
 
