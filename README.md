@@ -193,9 +193,10 @@ src/
         dtos/
       domain/
         models/
-        exceptions/
         repositories/
         ports/
+        dtos/
+        exceptions/
       infra/
         controllers/
         graphql/
@@ -218,6 +219,10 @@ src/
         hooks/
         dtos/
       domain/
+        models/
+        repositories/
+        ports/
+        dtos/
       data/
         repositories/
         sources/
@@ -228,6 +233,12 @@ src/
         layouts/
         hooks/
 ```
+
+**Nota importante:** El directorio `domain` siempre contiene los mismos subdirectorios en ambos tipos de proyecto:
+- `models/` - Modelos de dominio
+- `repositories/` - Interfaces de repositorios
+- `ports/` - Puertos de la arquitectura hexagonal
+- `dtos/` - Data Transfer Objects del dominio
 
 ## Características
 
