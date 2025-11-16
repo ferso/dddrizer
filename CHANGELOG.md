@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.2] - 2024-12-19
 
 ### Added
+
 - **Base project structure creation**: `init` command now asks if project is new
   - If new project, creates base directory structure:
     - **NestJS**: `src/core/` (with application, domain, infra, utils), `src/features/`, `src/gateways/`
@@ -15,17 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - If existing project, only creates configuration file
 
 ### Changed
+
 - `init` command flow now includes project type question before structure creation
 
 ## [1.0.1] - 2024-12-19
 
 ### Added
+
 - **Layer selection for services**: When creating a service, users can now choose between `application` or `domain` layer
   - Services can be created in `application/services/` for orchestration services
   - Services can be created in `domain/services/` for pure domain logic services
   - The CLI prompts the user to select the layer during service creation
 
 ### Changed
+
 - **Service creation flow**: Now prompts user to select layer (application or domain) before creating service
 - **Remove command**: Now searches for services in both `application/services/` and `domain/services/` automatically
 - **Rename command**: Now handles services in both layers, detecting the correct location automatically
@@ -33,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Module structure**: Both `application/services/` and `domain/services/` directories are created during module initialization
 
 ### Fixed
+
 - Provider imports now correctly reference the selected service layer
 - Module bindings (React) now use the correct import path based on selected layer
 - All service-related commands now properly handle services in both layers
@@ -40,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-12-19
 
 ### Added
+
 - **Initial project setup** with support for NestJS and React projects
 - **`init` command**: Initialize project with type selection (NestJS or React)
   - Creates `.dddrizer.json` configuration file
@@ -65,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Comprehensive README**: Documentation with examples for both project types
 
 ### Features
+
 - ✅ Project initialization with `dddrizer init`
 - ✅ Automatic dependency management for React projects
 - ✅ Type-safe code generation based on project type
@@ -78,9 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Service removal
 
 ### Technical Details
+
 - Configuration file: `.dddrizer.json` with project type
 - React projects use Inversify for dependency injection
 - NestJS projects use NestJS providers and modules
 - Automatic file structure generation based on project type
 - Duplicate prevention for imports, providers, and bindings
-

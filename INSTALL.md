@@ -37,6 +37,7 @@ npx dddrizer init
 El comando te preguntará:
 
 1. **¿Es un proyecto nuevo?** (y/n)
+
    - Si es nuevo: Se creará la estructura base del proyecto
    - Si no es nuevo: Solo se creará el archivo de configuración
 
@@ -45,6 +46,7 @@ El comando te preguntará:
    - `2` para React
 
 **Para proyectos nuevos:**
+
 - **NestJS**: Se creará `src/core/`, `src/features/`, `src/gateways/` con su estructura completa
 - **React**: Se creará `src/assets/`, `src/core/`, `src/features/` con su estructura completa
 
@@ -133,6 +135,7 @@ npm install --save-dev git+https://github.com/ferso/dddrizer.git
 Si después de instalar no puedes ejecutar `npx dddrizer`:
 
 1. Verifica que esté en `node_modules/.bin/`:
+
    ```bash
    ls node_modules/.bin/dddrizer
    ```
@@ -155,6 +158,7 @@ chmod +x node_modules/@mettal/dddrizer/hexagonal.sh
 Si tienes problemas con la autenticación de GitHub:
 
 1. **Usa HTTPS en lugar de SSH:**
+
    ```bash
    npm install --save-dev git+https://github.com/ferso/dddrizer.git
    ```
@@ -194,4 +198,3 @@ npx dddrizer controller Users
 ```
 
 ¡Listo! Ya tienes `dddrizer` instalado y funcionando en tu proyecto.
-

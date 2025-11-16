@@ -136,6 +136,29 @@ EOL
             mkdir -p "src/core/utils"
             mkdir -p "src/features"
             
+            # Create core module files for React
+            # Create container.ts in root of core (not in infra/di)
+            cat > "src/core/container.ts" << 'EOL'
+import { Container } from "inversify";
+import { configureCoreModule } from "./core.module";
+
+export const container = new Container({
+  autobind: true,
+});
+
+// Configure core module
+configureCoreModule(container);
+EOL
+            
+            # Create core.module.ts
+            cat > "src/core/core.module.ts" << 'EOL'
+import { Container } from "inversify";
+
+export const configureCoreModule = (container: Container) => {
+  // Core module bindings will be added here
+};
+EOL
+            
             echo "✓ Created React base structure:"
             echo "  - src/assets/"
             echo "  - src/core/ (base module)"
@@ -144,6 +167,8 @@ EOL
             echo "    - application/hooks/"
             echo "    - router/"
             echo "    - utils/"
+            echo "    - container.ts (Inversify container)"
+            echo "    - core.module.ts (Core module configuration)"
             echo "  - src/features/"
         fi
     fi

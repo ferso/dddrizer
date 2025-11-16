@@ -153,6 +153,7 @@ O si lo copiaste directamente:
 El comando te preguntará:
 
 1. **¿Es un proyecto nuevo?** (y/n)
+
    - Si respondes **y/yes**: Se creará la estructura base del proyecto
    - Si respondes **n/no**: Solo se creará el archivo de configuración
 
@@ -163,7 +164,9 @@ El comando te preguntará:
 ### Estructura Base para Proyectos Nuevos
 
 #### NestJS:
+
 Si es un proyecto nuevo NestJS, se creará:
+
 ```
 src/
   core/              # Módulo base del proyecto
@@ -176,7 +179,9 @@ src/
 ```
 
 #### React:
+
 Si es un proyecto nuevo React, se creará:
+
 ```
 src/
   assets/
@@ -214,6 +219,7 @@ O si lo copiaste directamente:
 ## Tipos de componentes soportados
 
 ### 0. Init (Primer paso obligatorio)
+
 Inicializa el proyecto y configura el tipo (NestJS o React):
 
 ```bash
@@ -221,6 +227,7 @@ dddrizer init
 ```
 
 ### 1. Module
+
 Crea un nuevo módulo con toda la estructura de directorios:
 
 ```bash
@@ -228,10 +235,12 @@ dddrizer module Users
 ```
 
 **Nota:** La estructura de directorios varía según el tipo de proyecto:
+
 - **NestJS**: `infra/` con providers, controllers, etc.
 - **React**: `data/` con repositories, sources, adapters y `interface/` con components, screens, etc.
 
 ### 2. Service
+
 Crea un servicio con su provider. El comando te preguntará en qué capa crear el servicio:
 
 ```bash
@@ -239,16 +248,19 @@ dddrizer service CreateUser
 ```
 
 **Selección de capa:**
+
 - **1) application**: Para servicios de aplicación (orquestación, casos de uso)
 - **2) domain**: Para servicios de dominio (lógica de negocio pura)
 
 El servicio se creará en la capa seleccionada:
+
 - `application/services/` - Servicios de aplicación
 - `domain/services/` - Servicios de dominio
 
 **Nota:** Los providers (NestJS) y bindings (React) se generan automáticamente según el tipo de proyecto.
 
 ### 3. Usecase
+
 Crea un caso de uso con su servicio asociado:
 
 ```bash
@@ -256,6 +268,7 @@ Crea un caso de uso con su servicio asociado:
 ```
 
 ### 4. Repository
+
 Crea un repositorio con su provider:
 
 ```bash
@@ -263,6 +276,7 @@ Crea un repositorio con su provider:
 ```
 
 ### 5. Source
+
 Crea una fuente de datos externa:
 
 ```bash
@@ -270,6 +284,7 @@ Crea una fuente de datos externa:
 ```
 
 ### 6. Adapter
+
 Crea un adaptador:
 
 ```bash
@@ -277,6 +292,7 @@ Crea un adaptador:
 ```
 
 ### 7. Controller
+
 Crea un controlador (solo para proyectos NestJS):
 
 ```bash
@@ -284,6 +300,7 @@ dddrizer controller Health
 ```
 
 ### 8. Hook
+
 Crea un hook de React (solo para proyectos React):
 
 ```bash
@@ -291,6 +308,7 @@ dddrizer hook UseUserData
 ```
 
 ### 9. Copy Service
+
 Copia un servicio existente a otro módulo. El servicio mantendrá la misma capa (application o domain) del servicio original:
 
 ```bash
@@ -298,10 +316,12 @@ dddrizer copy-service CreateVerificationWallet
 ```
 
 El comando te pedirá:
+
 1. La ruta del servicio fuente (debe incluir la capa: `application/services/` o `domain/services/`)
 2. El nombre del módulo destino
 
 **Ejemplo:**
+
 ```bash
 # Si el servicio está en application/services/
 verification/application/services/create-verification-wallet.service
@@ -311,6 +331,7 @@ verification/domain/services/create-verification-wallet.service
 ```
 
 ### 10. Rename
+
 Renombra un componente existente:
 
 ```bash
@@ -318,6 +339,7 @@ Renombra un componente existente:
 ```
 
 ### 11. Remove
+
 Elimina un servicio:
 
 ```bash
@@ -329,6 +351,7 @@ Elimina un servicio:
 El CLI genera diferentes estructuras según el tipo de proyecto:
 
 ### NestJS Projects:
+
 ```
 src/
   features/ o gateways/
@@ -358,6 +381,7 @@ src/
 ```
 
 ### React Projects:
+
 ```
 src/
   features/ o gateways/
@@ -384,7 +408,9 @@ src/
 ```
 
 **Nota importante sobre la estructura:**
+
 - El directorio `domain` siempre contiene los mismos subdirectorios en ambos tipos de proyecto:
+
   - `models/` - Modelos de dominio
   - `repositories/` - Interfaces de repositorios
   - `ports/` - Puertos de la arquitectura hexagonal
@@ -392,6 +418,7 @@ src/
   - `services/` - Servicios de dominio (lógica de negocio pura)
 
 - Los servicios pueden crearse en dos capas:
+
   - `application/services/` - Para servicios de aplicación que orquestan casos de uso
   - `domain/services/` - Para servicios de dominio con lógica de negocio pura
 
@@ -434,4 +461,3 @@ src/
   - `domain/services/`: Para servicios con lógica de negocio pura del dominio
 - Los comandos `remove` y `rename` buscan automáticamente en ambas capas si no encuentran el archivo
 - El comando `copy-service` preserva la capa del servicio original (detecta automáticamente desde la ruta)
-
