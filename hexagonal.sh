@@ -1157,7 +1157,21 @@ fi
         awk -v add_lines="$MISSING_CONTROLLERS" '
             function print_lines(s) { n=split(s, arr, "\\n"); for (i=1; i<=n; i++) if (arr[i] != "") print arr[i]; }
             BEGIN { added = 0 }
-            /controllers: \[/ && added == 0 { print $0; print_lines(add_lines); added = 1; next }
+            /controllers:\s*\[\s*\]/ && added == 0 { 
+                # Array is empty, replace with array containing items
+                print "  controllers: ["
+                print_lines(add_lines)
+                print "  ],"
+                added = 1
+                next
+            }
+            /controllers:\s*\[/ && added == 0 { 
+                # Array exists but not empty, add after opening bracket
+                print $0
+                print_lines(add_lines)
+                added = 1
+                next
+            }
             { print }
         ' "$MODULE_FILE" > "$TEMP_FILE"
         mv "$TEMP_FILE" "$MODULE_FILE"
@@ -1181,7 +1195,21 @@ fi
         awk -v add_lines="$MISSING_PROVIDERS" '
             function print_lines(s) { n=split(s, arr, "\\n"); for (i=1; i<=n; i++) if (arr[i] != "") print arr[i]; }
             BEGIN { added = 0 }
-            /providers: \[/ && added == 0 { print $0; print_lines(add_lines); added = 1; next }
+            /providers:\s*\[\s*\]/ && added == 0 { 
+                # Array is empty, replace with array containing items
+                print "  providers: ["
+                print_lines(add_lines)
+                print "  ],"
+                added = 1
+                next
+            }
+            /providers:\s*\[/ && added == 0 { 
+                # Array exists but not empty, add after opening bracket
+                print $0
+                print_lines(add_lines)
+                added = 1
+                next
+            }
             { print }
         ' "$MODULE_FILE" > "$TEMP_FILE"
         mv "$TEMP_FILE" "$MODULE_FILE"
@@ -1219,7 +1247,21 @@ fi
         awk -v add_lines="$MISSING_EXPORTS" '
             function print_lines(s) { n=split(s, arr, "\\n"); for (i=1; i<=n; i++) if (arr[i] != "") print arr[i]; }
             BEGIN { added = 0 }
-            /exports: \[/ && added == 0 { print $0; print_lines(add_lines); added = 1; next }
+            /exports:\s*\[\s*\]/ && added == 0 { 
+                # Array is empty, replace with array containing items
+                print "  exports: ["
+                print_lines(add_lines)
+                print "  ],"
+                added = 1
+                next
+            }
+            /exports:\s*\[/ && added == 0 { 
+                # Array exists but not empty, add after opening bracket
+                print $0
+                print_lines(add_lines)
+                added = 1
+                next
+            }
             { print }
         ' "$MODULE_FILE" > "$TEMP_FILE"
         mv "$TEMP_FILE" "$MODULE_FILE"
