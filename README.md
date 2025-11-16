@@ -6,47 +6,134 @@ Herramienta CLI para generar componentes de arquitectura hexagonal en proyectos 
 
 ## Instalación
 
-### Opción 1: Instalación desde GitHub
+### Opción 1: Instalación desde GitHub (Recomendado)
+
+Esta es la forma más sencilla y recomendada para usar `dddrizer` en tus proyectos.
+
+#### Usando SSH (si tienes configuradas tus claves SSH):
 
 ```bash
 npm install --save-dev git+ssh://git@github.com:ferso/dddrizer.git
 ```
 
-O usando HTTPS:
+#### Usando HTTPS:
+
+```bash
+npm install --save-dev git+https://github.com/ferso/dddrizer.git
+```
+
+O también puedes usar:
 
 ```bash
 npm install --save-dev https://github.com/ferso/dddrizer.git
 ```
 
-### Opción 2: Instalación local en cada proyecto
+#### Verificar la instalación:
 
-En cada proyecto donde quieras usar esta herramienta, ejecuta:
+Después de instalar, verifica que el comando esté disponible:
 
 ```bash
-npm install --save-dev file:../dddrizer
+npx dddrizer
 ```
 
-O si prefieres usar la ruta absoluta:
+Deberías ver el mensaje de ayuda con todos los comandos disponibles.
+
+#### Uso después de la instalación:
+
+Una vez instalado, puedes usar el comando directamente:
 
 ```bash
+# Inicializar el proyecto
+npx dddrizer init
+
+# Crear componentes
+npx dddrizer service CreateUser
+npx dddrizer module Users
+```
+
+**Nota:** Si prefieres usar `dddrizer` sin el prefijo `npx`, puedes agregarlo a tus scripts en `package.json`:
+
+```json
+{
+  "scripts": {
+    "dddrizer": "dddrizer"
+  }
+}
+```
+
+Y luego usar:
+
+```bash
+npm run dddrizer init
+npm run dddrizer service CreateUser
+```
+
+### Opción 2: Instalación desde GitHub con versión específica
+
+Si necesitas instalar una versión específica o la rama `main`:
+
+```bash
+# Instalar desde la rama main
+npm install --save-dev git+https://github.com/ferso/dddrizer.git#main
+
+# O desde una rama específica
+npm install --save-dev git+https://github.com/ferso/dddrizer.git#develop
+```
+
+### Opción 3: Instalación local (desarrollo)
+
+Si estás desarrollando o modificando `dddrizer` localmente:
+
+```bash
+# Desde una ruta relativa
+npm install --save-dev file:../dddrizer
+
+# O desde una ruta absoluta
 npm install --save-dev /Volumes/MSavior/Projects/mettal/dddrizer
 ```
 
-### Opción 3: Usar directamente sin instalar
+### Opción 4: Usar directamente sin instalar
 
-Puedes copiar el script `hexagonal.sh` a cada proyecto y ejecutarlo directamente:
+Si prefieres no instalarlo como dependencia, puedes descargar y usar el script directamente:
 
 ```bash
-cp /Volumes/MSavior/Projects/mettal/dddrizer/hexagonal.sh ./hexagonal.sh
-chmod +x ./hexagonal.sh
-./hexagonal.sh <type> <name>
+# Descargar el script
+curl -o hexagonal.sh https://raw.githubusercontent.com/ferso/dddrizer/main/hexagonal.sh
+
+# Dar permisos de ejecución
+chmod +x hexagonal.sh
+
+# Usar el script
+./hexagonal.sh init
+./hexagonal.sh service CreateUser
 ```
 
-### Opción 4: Crear un symlink
+### Opción 5: Crear un symlink (solo desarrollo local)
+
+Si tienes el repositorio clonado localmente y quieres usar el mismo archivo en múltiples proyectos:
 
 ```bash
+# Crear symlink al script
 ln -s /Volumes/MSavior/Projects/mettal/dddrizer/hexagonal.sh ./hexagonal.sh
 chmod +x ./hexagonal.sh
+
+# Usar el script
+./hexagonal.sh init
+./hexagonal.sh service CreateUser
+```
+
+## Actualización
+
+Para actualizar `dddrizer` a la última versión desde GitHub:
+
+```bash
+npm update @mettal/dddrizer
+```
+
+O si instalaste directamente desde GitHub:
+
+```bash
+npm install --save-dev git+https://github.com/ferso/dddrizer.git
 ```
 
 ## Inicialización

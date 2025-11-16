@@ -1,7 +1,7 @@
 {
   "name": "@mettal/dddrizer",
-  "version": "1.0.0",
-  "description": "CLI tool for generating hexagonal architecture components in NestJS projects",
+  "version": "1.0.1",
+  "description": "CLI tool for generating hexagonal architecture components in NestJS and React projects",
   "main": "hexagonal.sh",
   "bin": {
     "dddrizer": "./hexagonal.sh"
@@ -28,7 +28,8 @@
   "homepage": "https://github.com/ferso/dddrizer#readme",
   "files": [
     "hexagonal.sh",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ]
 }
 
