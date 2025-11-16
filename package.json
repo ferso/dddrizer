@@ -1,0 +1,34 @@
+{
+  "name": "@mettal/dddrizer",
+  "version": "1.0.0",
+  "description": "CLI tool for generating hexagonal architecture components in NestJS projects",
+  "main": "hexagonal.sh",
+  "bin": {
+    "dddrizer": "./hexagonal.sh"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hexagonal",
+    "architecture",
+    "nestjs",
+    "cli",
+    "generator"
+  ],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ferso/dddrizer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ferso/dddrizer/issues"
+  },
+  "homepage": "https://github.com/ferso/dddrizer#readme",
+  "files": [
+    "hexagonal.sh",
+    "README.md"
+  ]
+}
+
